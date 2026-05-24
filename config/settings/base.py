@@ -25,12 +25,20 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'users.app.UsersConfig'
-    'owners.app.OwnersConfig'
-
+    # Local Apps
+    'apps.users',
+    'apps.patients',
+    'apps.owners',
+    'apps.appointments',
+    'apps.notifications',
+    'apps.reporting',
+    'apps.stock',
+    'apps.common',
 ]
 
-AUTH_USER_MODEL = 'user.User'
+
+AUTH_USER_MODEL = 'users.User'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

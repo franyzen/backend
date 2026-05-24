@@ -3,10 +3,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 
-class Role(models.Model):
-    """
-    Tabla de roles. Ej: 'admin', 'cliente', 'dueño'.
-    """
+class User(AbstractUser):
+
     name = models.CharField(
         max_length=50,
         unique=True,
@@ -19,33 +17,19 @@ class Role(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        db_table = 'role'
-        verbose_name = 'Rol'
-        verbose_name_plural = 'Roles'
-        # Índice por nombre (aparte del unique ya implícito)
-        indexes = [
-            models.Index(fields=['name']),
-        ]
-
-    def __str__(self):
-        return self.name
-
-
-class User(AbstractUser):
-    """
-    Usuario personalizado. Relación FK a Role y OneToOne con Owner (éste desde la app owner).
-    """
-    # FK a Role (se permite null para usuarios sin rol definido)
-    role = models.ForeignKey(
-        Role,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='users',
-        help_text="Rol asignado al usuario"
-    )
-
+    ROLE_CHOICES = [
+       ('OWNER', 'Owner'),
+       ('RECEPTIONIST', 'Receptionist'),
+       ('VET', 'Vet'),
+       ('TECH_VET', 'Tech Vet'),
+       ('MANAGER', 'Manager'),
+   ]
+    role = models.CharField(
+       max_length=20,
+       choices=ROLE_CHOICES,
+       blank=True,
+       default='',
+   )
     # Campos adicionales de ejemplo
     phone_number = models.CharField(
         max_length=15,
@@ -62,16 +46,17 @@ class User(AbstractUser):
     )
 
     class Meta:
-        db_table = 'auth_user'  # podemos mantener el nombre clásico
+        db_table = 'users'  # podemos mantener el nombre clásico
         verbose_name = 'Usuario'
         verbose_name_plural = 'Usuarios'
         # Índices adicionales
         indexes = [
             models.Index(fields=['email']),
+            models.Index(fields=['name']),
             models.Index(fields=['role']),
         ]
         # Restricción extra: username también único (ya lo hereda de AbstractUser,
         # pero podemos explicitarlo si queremos; no es necesario)
 
     def __str__(self):
-        return self.username
+        return self.user
